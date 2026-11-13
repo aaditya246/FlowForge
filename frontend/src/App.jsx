@@ -5,7 +5,6 @@ import DashboardLayout from './layouts/DashboardLayout';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
-import PlaceholderPage from './pages/PlaceholderPage';
 import WorkflowsPage from './pages/WorkflowsPage';
 import WorkflowDetailPage from './pages/WorkflowDetailPage';
 import WorkflowVersionEditPage from './pages/WorkflowVersionEditPage';
@@ -15,6 +14,8 @@ import RequestHistoryPage from './pages/RequestHistoryPage';
 import ExecutionDetailPage from './pages/ExecutionDetailPage';
 import FailureSimulationPage from './pages/FailureSimulationPage';
 import ReliabilityDashboardPage from './pages/ReliabilityDashboardPage';
+import ManualReviewPage from './pages/ManualReviewPage';
+import ReviewDetailPage from './pages/ReviewDetailPage';
 
 export default function App() {
   return (
@@ -40,10 +41,8 @@ export default function App() {
             <Route path="/executions/:id" element={<ExecutionDetailPage />} />
             <Route path="/reliability" element={<ReliabilityDashboardPage />} />
             <Route path="/simulation" element={<FailureSimulationPage />} />
-            <Route
-              path="/review"
-              element={<PlaceholderPage title="Manual Review Queue" phase="Phase 6" />}
-            />
+            <Route path="/review" element={<ManualReviewPage />} />
+            <Route path="/reviews/:id" element={<ReviewDetailPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>

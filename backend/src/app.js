@@ -8,12 +8,21 @@ const rateLimit = require('express-rate-limit');
 const routes = require('./routes');
 const extractIdempotencyKey = require('./middleware/extractIdempotencyKey');
 const { notFoundHandler, errorHandler } = require('./middleware/errorHandler');
-const { clientOrigin, nodeEnv } = require('./config/env');
+const { clientOrigins, nodeEnv } = require('./config/env');
 
 const app = express();
 
 app.use(helmet());
-app.use(cors({ origin: clientOrigin, credentials: true }));
+app.use(
+  cors({
+    origin(origin, callback) {
+      // No Origin header (curl, server-to-server, same-origin) — allow.
+      if (!origin || clientOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error(`Origin '${origin}' is not allowed by CORS`));
+    },
+    credentials: true,
+  })
+);
 app.use(express.json({ limit: '1mb' }));
 app.use(extractIdempotencyKey);
 
