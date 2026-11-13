@@ -1,0 +1,16 @@
+module.exports = {
+  User: require('./User'),
+  WorkflowDefinition: require('./WorkflowDefinition'),
+  WorkflowVersion: require('./WorkflowVersion'),
+  Request: require('./Request'),
+  WorkflowExecution: require('./WorkflowExecution'),
+  ExecutionEvent: require('./ExecutionEvent'),
+  AuditLog: require('./AuditLog'),
+  IdempotencyRecord: require('./IdempotencyRecord'),
+  ReviewAction: require('./ReviewAction'),
+  ExternalDependencyLog: require('./ExternalDependencyLog'),
+  RetryRecord: require('./RetryRecord'),
+  SystemConfiguration: require('./SystemConfiguration'),
+  ManualReview: require('./ManualReview'),
+  Notification: require('./Notification'),
+};

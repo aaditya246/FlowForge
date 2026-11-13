@@ -1,0 +1,59 @@
+{
+  "_comment": "Example WorkflowVersion configuration — Insurance Claim Processing. Same generic engine as the loan example; only this JSON changes.",
+  "startStageId": "validate",
+  "conflictResolution": "priority",
+  "inputSchema": [
+    { "name": "policyNumber", "type": "string", "required": true },
+    { "name": "claimAmount", "type": "number", "required": true },
+    { "name": "policyValid", "type": "boolean", "required": true },
+    { "name": "documentsSubmitted", "type": "array", "required": true },
+    { "name": "priorClaimsThisYear", "type": "number", "required": false }
+  ],
+  "stages": [
+    { "stageId": "validate", "name": "Validate Input", "order": 1, "type": "validation", "onSuccess": "evaluate", "onFailure": "REJECTED" },
+    { "stageId": "evaluate", "name": "Evaluate Claim", "order": 2, "type": "rule_evaluation", "ruleGroup": "claim_rules", "onSuccess": "terminal", "onFailure": "terminal", "onManualReview": "terminal" },
+    { "stageId": "terminal", "name": "Terminal", "order": 3, "type": "terminal" }
+  ],
+  "rules": [
+    {
+      "ruleId": "POLICY_VALID",
+      "name": "Policy must be valid",
+      "priority": 100,
+      "enabled": true,
+      "group": "claim_rules",
+      "condition": { "field": "policyValid", "operator": "==", "value": true },
+      "onPass": "CONTINUE",
+      "onFail": "REJECT"
+    },
+    {
+      "ruleId": "REQUIRED_DOCUMENTS",
+      "name": "Required documents submitted",
+      "priority": 90,
+      "enabled": true,
+      "group": "claim_rules",
+      "condition": { "field": "documentsSubmitted", "operator": "CONTAINS", "value": "proof_of_loss" },
+      "onPass": "CONTINUE",
+      "onFail": "MANUAL_REVIEW"
+    },
+    {
+      "ruleId": "DUPLICATE_CLAIM_CHECK",
+      "name": "Excessive prior claims this year",
+      "priority": 80,
+      "enabled": true,
+      "group": "claim_rules",
+      "condition": { "field": "priorClaimsThisYear", "operator": ">=", "value": 3 },
+      "onPass": "MANUAL_REVIEW",
+      "onFail": "CONTINUE"
+    },
+    {
+      "ruleId": "LOW_VALUE_AUTO_APPROVE",
+      "name": "Low-value claim auto-approval",
+      "priority": 20,
+      "enabled": true,
+      "group": "claim_rules",
+      "condition": { "field": "claimAmount", "operator": "<=", "value": 25000 },
+      "onPass": "APPROVE",
+      "onFail": "MANUAL_REVIEW"
+    }
+  ]
+}

@@ -1,0 +1,103 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Fixed, single light theme by design. Explicitly light only — NOT "light
+   dark" — because letting the browser pick its own UA form-control colors
+   based on the OS theme is exactly what made login inputs render invisible
+   text (white-on-white) when the OS was in dark mode while every component
+   here assumes a light background. */
+:root {
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  background-color: #f8fafc; /* slate-50 */
+  color: #334155; /* slate-700 */
+}
+
+@layer components {
+  /* Every text input / textarea / select in the app should use this class
+     instead of ad-hoc utility strings, so contrast and focus behavior stay
+     consistent everywhere (and can be fixed in exactly one place). */
+  .input-field {
+    @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 transition;
+    @apply focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500;
+    caret-color: #2563eb;
+  }
+  .input-field:disabled {
+    @apply bg-slate-100 text-slate-400 cursor-not-allowed;
+  }
+  .input-field.input-error {
+    @apply border-red-400 focus:ring-red-400 focus:border-red-400;
+  }
+
+  .label-text {
+    @apply block text-sm font-medium text-slate-700 mb-1;
+  }
+
+  .field-error-text {
+    @apply text-sm text-red-600 mt-1;
+  }
+
+  .card {
+    @apply rounded-xl border border-slate-200 bg-white shadow-card;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg text-sm font-medium transition px-3 py-2 disabled:opacity-60 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-brand-600 text-white hover:bg-brand-700;
+  }
+  .btn-secondary {
+    @apply btn bg-white text-slate-700 border border-slate-300 hover:bg-slate-50;
+  }
+  .btn-danger {
+    @apply btn bg-red-600 text-white hover:bg-red-700;
+  }
+  .btn-ghost {
+    @apply btn text-slate-600 hover:bg-slate-100;
+  }
+
+  .badge {
+    @apply inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium;
+  }
+  .badge-neutral {
+    @apply badge bg-slate-100 text-slate-600;
+  }
+  .badge-success {
+    @apply badge bg-green-100 text-green-700;
+  }
+  .badge-warning {
+    @apply badge bg-amber-100 text-amber-700;
+  }
+  .badge-danger {
+    @apply badge bg-red-100 text-red-700;
+  }
+  .badge-info {
+    @apply badge bg-blue-100 text-blue-700;
+  }
+}
+
+/* Autofill: browsers paint their own background/text color on autofilled
+   inputs (often yellow bg + dark text, sometimes dark bg + dark text),
+   which can make the value unreadable regardless of our own classes. Force
+   it back to the input-field look via the long-transition-delay trick. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #0f172a;
+  -webkit-box-shadow: 0 0 0px 1000px #ffffff inset;
+  box-shadow: 0 0 0px 1000px #ffffff inset;
+  transition: background-color 9999s ease-in-out 0s;
+  caret-color: #2563eb;
+}

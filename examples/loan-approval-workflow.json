@@ -1,0 +1,71 @@
+{
+  "_comment": "Example WorkflowVersion configuration — Loan / Application Approval. This is pure configuration consumed by the generic rule engine and workflow engine; nothing here is hardcoded in application code.",
+  "startStageId": "validate",
+  "conflictResolution": "priority",
+  "inputSchema": [
+    { "name": "applicantName", "type": "string", "required": true },
+    { "name": "monthlySalary", "type": "number", "required": true },
+    { "name": "creditScore", "type": "number", "required": true },
+    { "name": "loanAmount", "type": "number", "required": true },
+    { "name": "employmentStatus", "type": "string", "required": true, "enum": ["salaried", "self_employed", "unemployed"] }
+  ],
+  "stages": [
+    { "stageId": "validate", "name": "Validate Input", "order": 1, "type": "validation", "onSuccess": "evaluate", "onFailure": "REJECTED" },
+    { "stageId": "evaluate", "name": "Evaluate Eligibility", "order": 2, "type": "rule_evaluation", "ruleGroup": "loan_rules", "onSuccess": "terminal", "onFailure": "terminal", "onManualReview": "terminal" },
+    { "stageId": "terminal", "name": "Terminal", "order": 3, "type": "terminal" }
+  ],
+  "rules": [
+    {
+      "ruleId": "MANDATORY_FIELDS",
+      "name": "Mandatory fields present",
+      "priority": 100,
+      "enabled": true,
+      "group": "loan_rules",
+      "condition": {
+        "and": [
+          { "field": "applicantName", "operator": "MANDATORY" },
+          { "field": "monthlySalary", "operator": "MANDATORY" },
+          { "field": "creditScore", "operator": "MANDATORY" }
+        ]
+      },
+      "onPass": "CONTINUE",
+      "onFail": "REJECT"
+    },
+    {
+      "ruleId": "MIN_CREDIT_SCORE",
+      "name": "Minimum credit score",
+      "priority": 90,
+      "enabled": true,
+      "group": "loan_rules",
+      "condition": { "field": "creditScore", "operator": "<", "value": 600 },
+      "onPass": "REJECT",
+      "onFail": "CONTINUE"
+    },
+    {
+      "ruleId": "AUTO_APPROVE",
+      "name": "High credit score and salary auto-approval",
+      "priority": 50,
+      "enabled": true,
+      "group": "loan_rules",
+      "condition": {
+        "and": [
+          { "field": "creditScore", "operator": ">=", "value": 750 },
+          { "field": "monthlySalary", "operator": ">=", "value": 50000 },
+          { "field": "employmentStatus", "operator": "==", "value": "salaried" }
+        ]
+      },
+      "onPass": "APPROVE",
+      "onFail": "CONTINUE"
+    },
+    {
+      "ruleId": "BORDERLINE_REVIEW",
+      "name": "Borderline score routed to manual review",
+      "priority": 10,
+      "enabled": true,
+      "group": "loan_rules",
+      "condition": { "field": "creditScore", "operator": ">=", "value": 600 },
+      "onPass": "MANUAL_REVIEW",
+      "onFail": "REJECT"
+    }
+  ]
+}
